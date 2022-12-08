@@ -1,6 +1,18 @@
 import numpy as np
 import math
 
+class MathObjects:
+
+    def first_derivate(function,point,epsilon=None):
+        if(epsilon==None): epsilon=1e-6
+        h=1
+        diff=(function(point+h)-function(point))/h
+        h=h/2
+        while(abs(diff-(function(point+h)-function(point))/h)>=epsilon):
+            diff=(function(point+h)-function(point))/h
+            h=h/2
+        return diff
+
 class OptimizationMethods:
 
     def half_segment(function,a,b,delta=None,epsilon=None,max_iter=None):
@@ -30,6 +42,6 @@ class OptimizationMethods:
                 x=x_2
         return min(function(a+b-x),function(x))
 
-
-
-
+    def gradient_iter(function,a,b,delta=None,epsilon=None,max_iter=None):
+        
+        return 0
