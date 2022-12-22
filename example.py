@@ -47,9 +47,16 @@ def f(x):
 def m(x):
     return x[0]+x[1]
 
-print(o.gradient_method(k,[-1,-1],[2,2]))
-print(o.projection_gradient_method(k,[-1,-1],[2,2]))
+#print(o.gradient_method(k,[-1,-1],[2,2]))
+print(o.projection_gradient_method(m,[-1,-1],[2,2],'cube'))
+print(o.projection_gradient_method(m,[-1,-1],[2,2],'ball'))
+print(o.conditional_gradient_method(m,[-1,-1],[2,2],'cube'))
+print(o.conditional_gradient_method(m,[-1,-1],[2,2],'ball'))
 
+# a=[-1,-1]
+# b=[2,2]
+# g=[1,-1]
+# print(o.get_x_overline_cube(a,b,g))
 
 #print([0]*3)
 #x=[1,2]
@@ -76,11 +83,11 @@ print(o.projection_gradient_method(k,[-1,-1],[2,2]))
 
 # print(b)
 
-a=[-1,-1]
-b=[2,2]
+# a=[-1,-1]
+# b=[2,2]
 
-x0=[(i+j)/2 for i,j in zip(a,b)]
-y0=np.sqrt(sum([(i-j)**2 for (i,j) in zip(a,b)]))/2
+# x0=[(i+j)/2 for i,j in zip(a,b)]
+# y0=np.sqrt(sum([(i-j)**2 for (i,j) in zip(a,b)]))/2
 # print(x0)
 # print(y0)
 
@@ -97,3 +104,8 @@ y0=np.sqrt(sum([(i-j)**2 for (i,j) in zip(a,b)]))/2
 
 #print(np.pi**2/4+np.pi/2+1/2)
 #print(9/2)
+
+a=1
+b=3
+c=2
+#print(a)

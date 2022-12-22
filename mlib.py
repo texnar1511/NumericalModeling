@@ -16,11 +16,42 @@ class OptimizationMethods:
     def distance(self,a,b):
         return np.sqrt(sum([(x-y)**2 for (x,y) in zip(a,b)]))
 
+    def norma(self,a):
+        return np.sqrt(sum([x**2 for x in a]))
+
     def projection_ball(self,u,u0,R):
         if(self.distance(u,u0)<=R):
             w=u
         else:
             w=[x+(y-x)*R/self.distance(u,u0) for (x,y) in zip(u0,u)]
+        return w
+
+    def abc(self,a,b,c):
+        if(a<=c<=b):
+            w=c
+        if(c<a):
+            w=a
+        if(b<c):
+            w=b
+        return w
+
+    def projection_cube(self,u,a,b):
+        w=[self.abc(i,j,v) for (i,j,v) in zip(a,b,u)]
+        return w
+
+    def get_x_overline_ball(self,u0,R,grad):
+        w=[u-R*g/self.norma(grad) for (u,g) in zip(u0,grad)]
+        return w
+
+    def abg(self,a,b,g):
+        #delta=1e-8
+        if(g>=0): w=a
+        if(g<0): w=b
+        #if(g==0): w=(a+b)/2
+        return w
+    
+    def get_x_overline_cube(self,a,b,grad):
+        w=[self.abg(i,j,g) for (i,j,g) in zip(a,b,grad)]
         return w
 
 
@@ -47,7 +78,7 @@ class OptimizationMethods:
         return [self.first_derivative_n_var(function,point,i,epsilon) for i in range(len(point))]
 
     def half_segment(self,function,a,b,delta=None,epsilon=None,max_iter=None):
-        if(delta==None): delta=1e-9
+        if(delta==None): delta=1e-8
         if(epsilon==None): epsilon=1e-8
         if(max_iter==None): max_iter=2*(int)(math.log((b-a-delta)/(epsilon-delta)))+1
         for i in range(max_iter):
@@ -90,50 +121,74 @@ class OptimizationMethods:
             x0=result
         return (x0,function(x0))
     
-    def projection_gradient_method(self,function,a,b,epsilon=None,delta=None):
+    def projection_gradient_method(self,function,a,b,method,epsilon=None,delta=None):
+        x0=[(x+y)/2 for x,y in zip(a,b)]
         if(epsilon==None): epsilon=1e-8
         if(delta==None): delta=1e-8
-        x0=[(x+y)/2 for x,y in zip(a,b)]
-        rad=self.distance(a,b)/2
-        u0=x0
+        if(method=='cube'): 
+            proj=self.projection_cube
+            m1=a
+            m2=b
+        if(method=='ball'): 
+            proj=self.projection_ball
+            m1=x0
+            m2=self.distance(a,b)/2
         delta1=[1]*len(x0)
         iter=0
         while(self.list_zero(self.gradient(function,x0),epsilon)==False and self.list_zero(delta1,delta)==False):
             #print(iter)
             iter=iter+1
-            #print(self.gradient(function,x0),'grad')
-            #print(self.list_zero(self.gradient(function,x0),epsilon))
-            # def func1(a_k):
-            #     #print(x0)
-            #     return function([x-a_k*y for (x,y) in zip(x0,self.gradient(function,x0))])
             def func1(a):
                 u=[x-a*y for (x,y) in zip(x0,self.gradient(function,x0))]
-                return function(self.projection_ball(u,u0,rad))
-            #print(g_k(1))
+                return function(proj(u,m1,m2))
             alpha=self.golden_ratio_naive(func1,0,1000)[0]
-            #alpha=1/(iter+1)
-            #print(alpha,'alpha')
-            #print(x0,'x0')
-            # def func2(x):
-            #     #print(x0)
-            #     #return abs(xa[:len(x0)]-)
-            #     return sum([(x1-x_k+alpha*y)**2 for (x1,x_k,y) in zip(x,x0,self.gradient(function,x0))])
-            #print(g_k(1))
-            #alpha=self.golden_ratio_naive(g_k,0,1000)[0]
-            #alpha=self.half_segment(g_k,0,100)
-            #print(alpha)
-            #result=self.gradient_method(func2,a,b)
             u=[x-alpha*y for (x,y) in zip(x0,self.gradient(function,x0))]
-            result=self.projection_ball(u,u0,rad)
-            #print(result)
-            #print(x0)
-            #print(result,'x')
+            result=proj(u,m1,m2)
             delta1=[abs(x-y) for (x,y) in zip(x0,result)]
-            #print(delta1,'delta1')
-            #print(self.list_zero(delta1,delta))
-            #print(self.gradient(function,x0),'grad')
-            #print(self.list_zero(self.gradient(function,x0),epsilon))
-            #print(delta1,'delta')
             x0=result
         return (x0,function(x0))
+
+    def conditional_gradient_method(self,function,a,b,method,epsilon=None,delta=None):
+        x0=[(x+y)/2 for x,y in zip(a,b)]
+        if(epsilon==None): epsilon=1e-8
+        if(delta==None): delta=1e-8
+        if(method=='cube'): 
+            m1=a
+            m2=b
+            overline=self.get_x_overline_cube
+        if(method=='ball'):
+            m1=x0
+            m2=self.distance(a,b)/2
+            overline=self.get_x_overline_ball
+        delta1=[1]*len(x0)
+        delta2=[1]*len(x0)
+        delta3=[1]*len(x0)
+        iter=0
+        while(self.list_zero(self.gradient(function,x0),epsilon)==False and self.list_zero(delta1,delta)==False):
+            #print(iter)
+            iter=iter+1
+            x_overline=overline(m1,m2,self.gradient(function,x0))
+            #print(delta2,'delta2')
+            #delta2=[abs(x-y) for (x,y) in zip(x0,x_overline)]
+            #if(self.list_zero(delta2,delta)==True): break
+            #print(self.gradient(function,x0),'grad')
+            #print(x0,'x0')
+            #print(x_overline,'x_over')
+            def func1(a):
+                u=[x+a*(y-x) for (x,y) in zip(x0,x_overline)]
+                return function(u)
+            alpha=self.golden_ratio_naive(func1,0,1)[0]
+            #print(alpha,'alpha')
+            result=[x+alpha*(y-x) for (x,y) in zip(x0,x_overline)]
+            #print(result,'result')
+            delta1=[abs(x-y) for (x,y) in zip(x0,result)]
+            #print(delta1,'delta1')
+            #delta3==[abs(x-y) for (x,y) in zip(result,x_overline)]
+            #print(delta3,'delta3')
+            #print(self.list_zero([abs(x-y) for (x,y) in zip(self.gradient(function,x0),self.gradient(function,result))],epsilon))
+            #if(self.list_zero([abs(x-y) for (x,y) in zip(self.gradient(function,x0),self.gradient(function,result))],epsilon)==True): break
+            x0=result
+            #if(self.list_zero(delta3,delta)==True): break
+        return (x0,function(x0))
+
 
