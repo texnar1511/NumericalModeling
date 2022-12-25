@@ -1,6 +1,9 @@
 from mlib import OptimizationMethods
 import numpy as np
 import math
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import mpl_toolkits.mplot3d.axes3d as p3
 
 def k(x):
     return x[0]**2+np.sin(x[1])
@@ -48,10 +51,28 @@ def m(x):
     return x[0]+x[1]
 
 #print(o.gradient_method(k,[-1,-1],[2,2]))
-print(o.projection_gradient_method(m,[-1,-1],[2,2],'cube'))
-print(o.projection_gradient_method(m,[-1,-1],[2,2],'ball'))
-print(o.conditional_gradient_method(m,[-1,-1],[2,2],'cube'))
-print(o.conditional_gradient_method(m,[-1,-1],[2,2],'ball'))
+#print(o.projection_gradient_method(m,[-1,-1],[2,2],'cube'))
+#print(o.projection_gradient_method(m,[-1,-1],[2,2],'ball'))
+#print(o.conditional_gradient_method(m,[-1,-1],[2,2],'cube'))
+#print(o.conditional_gradient_method(m,[-1,-1],[2,2],'ball'))
+
+def l(x):
+    return x[0]**2
+
+def g(x):
+    return x**2
+
+#print(o.projection_gradient_method(l,[-1],[10],'cube'))
+#print(o.gradient_method(l,[-2],[1]))
+#print(o.projection_gradient_method(l,[-2],[1],'cube'))
+#print(o.projection_gradient_method(l,[-2],[1],'ball'))
+#print(o.conditional_gradient_method(l,[-2],[1],'cube'))
+#print(o.conditional_gradient_method(l,[-2],[1],'ball'))
+#print(o.golden_ratio_naive(g,-2,1))
+
+a=[[1],[2],[3],[4],[5]]
+#print(a)
+#print(list(np.array(a).ravel()))
 
 # a=[-1,-1]
 # b=[2,2]
@@ -109,3 +130,80 @@ a=1
 b=3
 c=2
 #print(a)
+
+
+
+# def f(x):
+#     return x[0]**2+x[1]**2
+
+# x = np.linspace(0, 1, 2)
+# y = np.linspace(2, 3, 2)
+
+# X, Y = np.meshgrid(x, y)
+# print(X)
+# print(Y)
+# Z = f([X,Y])
+
+
+# print(Z)
+
+
+
+input1=input()
+
+def a(x):
+   return eval(input1)
+input2=input()
+input3=input()
+
+print(o.gradient_method(a,eval(input2),eval(input3),input1))
+
+# a=123
+# print(str(a))
+# fig=plt.figure(figsize=(7,7))
+# x=np.linspace(-3,3,10)
+# y=np.linspace(-3,3,10)
+# X,Y=np.meshgrid(x,y)
+# Z=k([X,Y])
+# ax = plt.axes(projection='3d')
+# ax.plot_surface(X,Y,Z,rstride=1,cstride=1,cmap='viridis',edgecolor='none')
+# ax.set_xlabel('x')
+# ax.set_ylabel('y')
+# ax.set_zlabel('z')
+# plt.show()
+
+# xy_anim=[[0,0],[0,2],[2,2],[2,0]]
+# z_anim=[[k(xy)] for xy in xy_anim]
+
+# fig=plt.figure()
+# ax=plt.axes(projection='3d',xlim3d=(-5,5),ylim3d=(-10,10),zlim3d=(-2,20))
+# x=np.linspace(-3,3,10)
+# y=np.linspace(-3,3,10)
+# X,Y=np.meshgrid(x,y)
+# Z=k([X,Y])
+# #ax.plot_surface(X,Y,Z,rstride=1,cstride=1,cmap='viridis',edgecolor='none')
+# ax.set_xlabel('x')
+# ax.set_ylabel('y')
+# ax.set_zlabel('z')
+
+# # fig = plt.figure()
+# # ax = p3.Axes3D(fig)
+
+# line, = ax.plot([],[],[],'o')
+        
+# def init():
+#     line.set_data([],[])
+#     line.set_3d_properties([],'z')
+#     return line,
+
+# def animate(i):
+#     line.set_data([xy_anim[i][0]],[xy_anim[i][1]])
+#     line.set_3d_properties(z_anim[i], 'z')
+#     return line,
+
+# anim=animation.FuncAnimation(fig,animate,init_func=init,frames=len(xy_anim),interval=1000,blit=True)
+
+
+
+# plt.legend()
+# plt.show()

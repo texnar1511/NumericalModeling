@@ -1,12 +1,74 @@
 import numpy as np
 import math
-import time
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 class OptimizationMethods:
 
+    def animate_optimization_2D(self,function,x_anim,label1,label2):
+        #print(x_anim)
+        y_anim=[[function(x)] for x in x_anim]
+        #print(y_anim)
+        fig=plt.figure()
+        x_flat=list(np.array(x_anim).ravel())
+        y_flat=list(np.array(y_anim).ravel())
+        delt=abs(max(x_flat)-min(x_flat))/10
+        eps=abs(max(y_flat)-min(y_flat))/10
+        x_lim=[min(x_flat)-delt,max(x_flat)+delt]
+        y_lim=[min(y_flat)-eps,max(y_flat)+eps]
+        ax=plt.axes(xlim=x_lim,ylim=y_lim)
+        line, = ax.plot([],[],'o',color='r',label=label2)
+        
+        def init():
+            line.set_data([],[])
+            return line,
+
+        def animate(i):
+            line.set_data(x_anim[i],y_anim[i])
+            return line,
+        
+        linsp=list(np.linspace(min(x_flat)-delt,max(x_flat)+delt,1000))
+        ax.plot(linsp,[function([x]) for x in linsp],color='b',label=label1)
+        anim=animation.FuncAnimation(fig,animate,init_func=init,frames=len(x_anim),interval=1000,blit=True)
+        plt.legend()
+        plt.show()
+
+    def animate_optimization_3D(self,function,xy_anim,label1,label2):
+        z_anim=[[function(xy)] for xy in xy_anim]
+
+        fig=plt.figure()
+        ax=plt.axes(projection='3d',xlim3d=(-5,5),ylim3d=(-10,10),zlim3d=(-2,20))
+        x=np.linspace(-3,3,10)
+        y=np.linspace(-3,3,10)
+        X,Y=np.meshgrid(x,y)
+        Z=function([X,Y])
+        surf=ax.plot_surface(X,Y,Z,rstride=1,cstride=1,edgecolor='none',label=label1)
+        surf._edgecolors2d = surf._edgecolor3d
+        surf._facecolors2d = surf._facecolor3d
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_zlabel('z')
+
+        line, = ax.plot([],[],[],'o',color='r',label=label2)
+
+        def init():
+            line.set_data([],[])
+            line.set_3d_properties([],'z')
+            return line,
+
+        def animate(i):
+            line.set_data([xy_anim[i][0]],[xy_anim[i][1]])
+            line.set_3d_properties(z_anim[i], 'z')
+            return line,
+        
+        anim=animation.FuncAnimation(fig,animate,init_func=init,frames=len(xy_anim),interval=1000,blit=True)
+        ax.legend()
+        plt.legend()
+        plt.show()
+
     def list_zero(self,a,accuracy):
         for i in range(len(a)):
-            if(a[i]>=accuracy):
+            if(abs(a[i])>=accuracy):
                 return False
         return True
 
@@ -104,25 +166,32 @@ class OptimizationMethods:
                 x=x_2
         return (a+b-x,function(a+b-x)) if function(a+b-x)<=function(x) else (x,function(x))
  
-    def gradient_method(self,function,a,b,epsilon=None,delta=None):
+    def gradient_method(self,function,a,b,label,epsilon=None,delta=None):
         if(epsilon==None): epsilon=1e-8
         if(delta==None): delta=1e-8
         x0=[(i+j)/2 for i,j in zip(a,b)]
+        x_anim=[x0]
         delta1=[1]*len(x0)
         iter=0
         while(self.list_zero(self.gradient(function,x0),epsilon)==False and self.list_zero(delta1,delta)==False):
-            #print(iter)
+            print(iter)
             iter=iter+1
+            #print(self.gradient(function,x0))
             def func1(a):
                 return function([x-a*y for (x,y) in zip(x0,self.gradient(function,x0))])
             alpha=self.golden_ratio_naive(func1,0,1000)[0]
             result=[x-alpha*y for (x,y) in zip(x0,self.gradient(function,x0))]
             delta1=[abs(x-y) for (x,y) in zip(x0,result)]
             x0=result
+            x_anim.append(x0)
+        #print(x_anim)
+        if(len(a)==1): self.animate_optimization_2D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
+        if(len(a)==2): self.animate_optimization_3D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
         return (x0,function(x0))
     
     def projection_gradient_method(self,function,a,b,method,epsilon=None,delta=None):
         x0=[(x+y)/2 for x,y in zip(a,b)]
+        x_anim=[x0]
         if(epsilon==None): epsilon=1e-8
         if(delta==None): delta=1e-8
         if(method=='cube'): 
@@ -136,7 +205,7 @@ class OptimizationMethods:
         delta1=[1]*len(x0)
         iter=0
         while(self.list_zero(self.gradient(function,x0),epsilon)==False and self.list_zero(delta1,delta)==False):
-            #print(iter)
+            print(iter)
             iter=iter+1
             def func1(a):
                 u=[x-a*y for (x,y) in zip(x0,self.gradient(function,x0))]
@@ -146,6 +215,9 @@ class OptimizationMethods:
             result=proj(u,m1,m2)
             delta1=[abs(x-y) for (x,y) in zip(x0,result)]
             x0=result
+            x_anim.append(x0)
+        print(x_anim,'x_anim')
+        #self.animate_optimization(function,x_anim)
         return (x0,function(x0))
 
     def conditional_gradient_method(self,function,a,b,method,epsilon=None,delta=None):
