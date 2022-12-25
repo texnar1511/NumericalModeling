@@ -157,6 +157,10 @@ input2=input()
 input3=input()
 
 print(o.gradient_method(a,eval(input2),eval(input3),input1))
+print(o.projection_gradient_method(a,eval(input2),eval(input3),input1,'ball'))
+print(o.projection_gradient_method(a,eval(input2),eval(input3),input1,'cube'))
+print(o.conditional_gradient_method(a,eval(input2),eval(input3),input1,'ball'))
+print(o.conditional_gradient_method(a,eval(input2),eval(input3),input1,'cube'))
 
 # a=123
 # print(str(a))

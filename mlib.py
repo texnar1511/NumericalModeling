@@ -35,16 +35,27 @@ class OptimizationMethods:
 
     def animate_optimization_3D(self,function,xy_anim,label1,label2):
         z_anim=[[function(xy)] for xy in xy_anim]
+        x_anim=[[xy[0]] for xy in xy_anim]
+        y_anim=[[xy[1]] for xy in xy_anim]
+        x_flat=list(np.array(x_anim).ravel())
+        y_flat=list(np.array(y_anim).ravel())
+        z_flat=list(np.array(z_anim).ravel())
+        delt1=abs(max(x_flat)-min(x_flat))/10
+        delt2=abs(max(y_flat)-min(y_flat))/10
+        eps=abs(max(z_flat)-min(z_flat))/10
+        x_lim=[min(x_flat)-delt1,max(x_flat)+delt1]
+        y_lim=[min(y_flat)-delt2,max(y_flat)+delt2]
+        z_lim=[min(z_flat)-eps,max(z_flat)+eps]
 
         fig=plt.figure()
-        ax=plt.axes(projection='3d',xlim3d=(-5,5),ylim3d=(-10,10),zlim3d=(-2,20))
-        x=np.linspace(-3,3,10)
-        y=np.linspace(-3,3,10)
+        ax=plt.axes(projection='3d',xlim3d=x_lim,ylim3d=y_lim,zlim3d=z_lim)
+        x=np.linspace(min(x_flat)-delt1,max(x_flat)+delt1,30)
+        y=np.linspace(min(y_flat)-delt2,max(y_flat)+delt2,30)
         X,Y=np.meshgrid(x,y)
         Z=function([X,Y])
         surf=ax.plot_surface(X,Y,Z,rstride=1,cstride=1,edgecolor='none',label=label1)
-        surf._edgecolors2d = surf._edgecolor3d
-        surf._facecolors2d = surf._facecolor3d
+        surf._edgecolors2d=surf._edgecolor3d
+        surf._facecolors2d=surf._facecolor3d
         ax.set_xlabel('x')
         ax.set_ylabel('y')
         ax.set_zlabel('z')
@@ -189,7 +200,7 @@ class OptimizationMethods:
         if(len(a)==2): self.animate_optimization_3D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
         return (x0,function(x0))
     
-    def projection_gradient_method(self,function,a,b,method,epsilon=None,delta=None):
+    def projection_gradient_method(self,function,a,b,label,method,epsilon=None,delta=None):
         x0=[(x+y)/2 for x,y in zip(a,b)]
         x_anim=[x0]
         if(epsilon==None): epsilon=1e-8
@@ -216,12 +227,14 @@ class OptimizationMethods:
             delta1=[abs(x-y) for (x,y) in zip(x0,result)]
             x0=result
             x_anim.append(x0)
-        print(x_anim,'x_anim')
-        #self.animate_optimization(function,x_anim)
+        #print(x_anim,'x_anim')
+        if(len(a)==1): self.animate_optimization_2D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
+        if(len(a)==2): self.animate_optimization_3D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
         return (x0,function(x0))
 
-    def conditional_gradient_method(self,function,a,b,method,epsilon=None,delta=None):
+    def conditional_gradient_method(self,function,a,b,label,method,epsilon=None,delta=None):
         x0=[(x+y)/2 for x,y in zip(a,b)]
+        x_anim=[x0]
         if(epsilon==None): epsilon=1e-8
         if(delta==None): delta=1e-8
         if(method=='cube'): 
@@ -237,7 +250,7 @@ class OptimizationMethods:
         delta3=[1]*len(x0)
         iter=0
         while(self.list_zero(self.gradient(function,x0),epsilon)==False and self.list_zero(delta1,delta)==False):
-            #print(iter)
+            print(iter)
             iter=iter+1
             x_overline=overline(m1,m2,self.gradient(function,x0))
             #print(delta2,'delta2')
@@ -261,6 +274,9 @@ class OptimizationMethods:
             #if(self.list_zero([abs(x-y) for (x,y) in zip(self.gradient(function,x0),self.gradient(function,result))],epsilon)==True): break
             x0=result
             #if(self.list_zero(delta3,delta)==True): break
+            x_anim.append(x0)
+        if(len(a)==1): self.animate_optimization_2D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
+        if(len(a)==2): self.animate_optimization_3D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
         return (x0,function(x0))
 
 
