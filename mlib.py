@@ -12,8 +12,8 @@ class OptimizationMethods:
         fig=plt.figure()
         x_flat=list(np.array(x_anim).ravel())
         y_flat=list(np.array(y_anim).ravel())
-        delt=abs(max(x_flat)-min(x_flat))/10
-        eps=abs(max(y_flat)-min(y_flat))/10
+        delt=abs(max(x_flat)-min(x_flat))/5
+        eps=abs(max(y_flat)-min(y_flat))/5
         x_lim=[min(x_flat)-delt,max(x_flat)+delt]
         y_lim=[min(y_flat)-eps,max(y_flat)+eps]
         ax=plt.axes(xlim=x_lim,ylim=y_lim)
@@ -40,9 +40,9 @@ class OptimizationMethods:
         x_flat=list(np.array(x_anim).ravel())
         y_flat=list(np.array(y_anim).ravel())
         z_flat=list(np.array(z_anim).ravel())
-        delt1=abs(max(x_flat)-min(x_flat))/10
-        delt2=abs(max(y_flat)-min(y_flat))/10
-        eps=abs(max(z_flat)-min(z_flat))/10
+        delt1=abs(max(x_flat)-min(x_flat))/5
+        delt2=abs(max(y_flat)-min(y_flat))/5
+        eps=abs(max(z_flat)-min(z_flat))/5
         x_lim=[min(x_flat)-delt1,max(x_flat)+delt1]
         y_lim=[min(y_flat)-delt2,max(y_flat)+delt2]
         z_lim=[min(z_flat)-eps,max(z_flat)+eps]
@@ -175,12 +175,14 @@ class OptimizationMethods:
             else: 
                 a=x_1
                 x=x_2
+        #self.animate_optimization_2D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
         return (a+b-x,function(a+b-x)) if function(a+b-x)<=function(x) else (x,function(x))
  
-    def gradient_method(self,function,a,b,label,epsilon=None,delta=None):
+    def gradient_method(self,function,a,b,label,initial_point=None,epsilon=None,delta=None):
         if(epsilon==None): epsilon=1e-8
         if(delta==None): delta=1e-8
-        x0=[(i+j)/2 for i,j in zip(a,b)]
+        x0=initial_point
+        if(initial_point==None): x0=[(i+j)/2 for i,j in zip(a,b)]
         x_anim=[x0]
         delta1=[1]*len(x0)
         iter=0
@@ -200,8 +202,9 @@ class OptimizationMethods:
         if(len(a)==2): self.animate_optimization_3D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
         return (x0,function(x0))
     
-    def projection_gradient_method(self,function,a,b,label,method,epsilon=None,delta=None):
-        x0=[(x+y)/2 for x,y in zip(a,b)]
+    def projection_gradient_method(self,function,a,b,label,method,initial_point=None,epsilon=None,delta=None):
+        x0=initial_point
+        if(initial_point==None): x0=[(i+j)/2 for i,j in zip(a,b)]
         x_anim=[x0]
         if(epsilon==None): epsilon=1e-8
         if(delta==None): delta=1e-8
@@ -211,7 +214,7 @@ class OptimizationMethods:
             m2=b
         if(method=='ball'): 
             proj=self.projection_ball
-            m1=x0
+            m1=[(x+y)/2 for x,y in zip(a,b)]
             m2=self.distance(a,b)/2
         delta1=[1]*len(x0)
         iter=0
@@ -232,8 +235,9 @@ class OptimizationMethods:
         if(len(a)==2): self.animate_optimization_3D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
         return (x0,function(x0))
 
-    def conditional_gradient_method(self,function,a,b,label,method,epsilon=None,delta=None):
-        x0=[(x+y)/2 for x,y in zip(a,b)]
+    def conditional_gradient_method(self,function,a,b,label,method,initial_point=None,epsilon=None,delta=None):
+        x0=initial_point
+        if(initial_point==None): x0=[(i+j)/2 for i,j in zip(a,b)]
         x_anim=[x0]
         if(epsilon==None): epsilon=1e-8
         if(delta==None): delta=1e-8
@@ -242,7 +246,7 @@ class OptimizationMethods:
             m2=b
             overline=self.get_x_overline_cube
         if(method=='ball'):
-            m1=x0
+            m1=[(x+y)/2 for x,y in zip(a,b)]
             m2=self.distance(a,b)/2
             overline=self.get_x_overline_ball
         delta1=[1]*len(x0)
