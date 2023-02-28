@@ -77,6 +77,18 @@ class OptimizationMethods:
         plt.legend()
         plt.show()
 
+    def animation(self):
+        
+        x, y = np.mgrid[-5:5:0.05, -5:5:0.05]
+        z = (np.sqrt(x**2 + y**2) + np.sin(x**2 + y**2))
+
+        fig, ax = plt.subplots(1,1)
+        im = ax.imshow(z)
+        fig.colorbar(im)
+        ax.yaxis.set_major_locator(plt.NullLocator()) # remove y axis ticks
+        ax.xaxis.set_major_locator(plt.NullLocator()) # remove x axis ticks
+        plt.show()
+
     def list_zero(self,a,accuracy):
         for i in range(len(a)):
             if(abs(a[i])>=accuracy):
@@ -150,9 +162,10 @@ class OptimizationMethods:
         if(epsilon==None): epsilon=1e-8
         return [self.first_derivative_n_var(function,point,i,epsilon) for i in range(len(point))]
 
-    def half_segment(self,function,a,b,delta=None,epsilon=None,max_iter=None):
+
+    def half_segment(self, function, a, b, delta = None, epsilon=None,max_iter=None):
         if(delta==None): delta=1e-8
-        if(epsilon==None): epsilon=1e-8
+        if(epsilon==None): epsilon=1e-7
         if(max_iter==None): max_iter=2*(int)(math.log((b-a-delta)/(epsilon-delta)))+1
         for i in range(max_iter):
             x_1=(a+b-delta)/2
@@ -178,7 +191,7 @@ class OptimizationMethods:
         #self.animate_optimization_2D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
         return (a+b-x,function(a+b-x)) if function(a+b-x)<=function(x) else (x,function(x))
  
-    def gradient_method(self,function,a,b,label,initial_point=None,epsilon=None,delta=None):
+    def gradient_method(self,function,a,b,label = None,initial_point=None,epsilon=None,delta=None):
         if(epsilon==None): epsilon=1e-8
         if(delta==None): delta=1e-8
         x0=initial_point
@@ -187,19 +200,20 @@ class OptimizationMethods:
         delta1=[1]*len(x0)
         iter=0
         while(self.list_zero(self.gradient(function,x0),epsilon)==False and self.list_zero(delta1,delta)==False):
-            print(iter)
+            #print(iter)
             iter=iter+1
             #print(self.gradient(function,x0))
             def func1(a):
                 return function([x-a*y for (x,y) in zip(x0,self.gradient(function,x0))])
-            alpha=self.golden_ratio_naive(func1,0,1000)[0]
+            alpha = self.golden_ratio_naive(func1, 0, 1000)[0]
             result=[x-alpha*y for (x,y) in zip(x0,self.gradient(function,x0))]
             delta1=[abs(x-y) for (x,y) in zip(x0,result)]
             x0=result
             x_anim.append(x0)
         #print(x_anim)
-        if(len(a)==1): self.animate_optimization_2D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
-        if(len(a)==2): self.animate_optimization_3D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
+        #animation
+        #if(len(a)==1): self.animate_optimization_2D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
+        #if(len(a)==2): self.animate_optimization_3D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
         return (x0,function(x0))
     
     def projection_gradient_method(self,function,a,b,label,method,initial_point=None,epsilon=None,delta=None):
@@ -231,8 +245,9 @@ class OptimizationMethods:
             x0=result
             x_anim.append(x0)
         #print(x_anim,'x_anim')
-        if(len(a)==1): self.animate_optimization_2D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
-        if(len(a)==2): self.animate_optimization_3D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
+        #animation
+        #if(len(a)==1): self.animate_optimization_2D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
+        #if(len(a)==2): self.animate_optimization_3D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
         return (x0,function(x0))
 
     def conditional_gradient_method(self,function,a,b,label,method,initial_point=None,epsilon=None,delta=None):
@@ -254,7 +269,7 @@ class OptimizationMethods:
         delta3=[1]*len(x0)
         iter=0
         while(self.list_zero(self.gradient(function,x0),epsilon)==False and self.list_zero(delta1,delta)==False):
-            print(iter)
+            #print(iter)
             iter=iter+1
             x_overline=overline(m1,m2,self.gradient(function,x0))
             #print(delta2,'delta2')
@@ -279,8 +294,10 @@ class OptimizationMethods:
             x0=result
             #if(self.list_zero(delta3,delta)==True): break
             x_anim.append(x0)
-        if(len(a)==1): self.animate_optimization_2D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
-        if(len(a)==2): self.animate_optimization_3D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
+        #animation
+        #if(len(a)==1): self.animate_optimization_2D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
+        #if(len(a)==2): self.animate_optimization_3D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
         return (x0,function(x0))
 
-
+    def swarm_particles_method(self,function,a,b):
+        return 0

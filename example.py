@@ -1,6 +1,6 @@
 from mlib import OptimizationMethods
 import numpy as np
-import math
+from math import *
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import mpl_toolkits.mplot3d.axes3d as p3
@@ -17,7 +17,19 @@ def f(x):
 
 #print(MathObjects.first_derivate(function=f,point=[1,2],num_var=1))
 
+a = input()
+
 o=OptimizationMethods()
+
+#print(o.golden_ratio_naive(lambda x: eval(a), -2, 3))
+
+#a = input()
+
+def f(x):
+    return eval(a)
+
+print(o.conditional_gradient_method(f, [-1, -1], [2, 2], label = a, method = 'cube'))
+
 
 #print(f([3,2]))
 
@@ -149,18 +161,23 @@ c=2
 
 
 
-input1=input()
+# input1=input()
 
-def a(x):
-   return eval(input1)
-input2=input()
-input3=input()
-input4=input()
+# def a(x):
+#    return eval(input1)
+
+# print(a([1,2]))
+
+#o.animation()
+
+#input2=input()
+#input3=input()
+#input4=input()
 
 #print(o.gradient_method(a,eval(input2),eval(input3),input1))
-print(o.projection_gradient_method(a,eval(input2),eval(input3),input1,'ball',eval(input4)))
+#print(o.projection_gradient_method(a,eval(input2),eval(input3),input1,'ball',eval(input4)))
 #print(o.projection_gradient_method(a,eval(input2),eval(input3),input1,'cube'))
-print(o.conditional_gradient_method(a,eval(input2),eval(input3),input1,'ball',eval(input4)))
+#print(o.conditional_gradient_method(a,eval(input2),eval(input3),input1,'ball',eval(input4)))
 #print(o.conditional_gradient_method(a,eval(input2),eval(input3),input1,'cube'))
 
 # a=123
