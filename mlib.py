@@ -5,6 +5,43 @@ import matplotlib.animation as animation
 
 class OptimizationMethods:
 
+    def animation_2D(self,function,x_anim,labels):
+        #print(x_anim)
+        #x_anim = [[x1, x2, x3, x4, ...], [y1, y2, y3, y4, ...], ...]
+        y_anim = [[function(x) for x in x_anim_i] for x_anim_i in x_anim]
+        #print(y_anim)
+        fig=plt.figure()
+        x_flat = [item for sublist in x_anim for item in sublist]
+        y_flat = [item for sublist in y_anim for item in sublist]
+        delt=abs(max(x_flat)-min(x_flat))/5
+        eps=abs(max(y_flat)-min(y_flat))/5
+        x_lim=[min(x_flat)-delt,max(x_flat)+delt]
+        y_lim=[min(y_flat)-eps,max(y_flat)+eps]
+        ax=plt.axes(xlim=x_lim,ylim=y_lim)
+        lines = []
+        for i in range(len(x_anim)):
+            if(i == 0): col = 'b'
+            if(i == 1): col = 'g'
+            if(i == 2): col = 'r'
+            line, = ax.plot([],[],'o',color = col, label = labels[i])
+            lines.append(line)
+        
+        def init():
+            for line in lines:
+                line.set_data([],[])
+            return lines
+
+        def animate(i):
+            for j in range(len(x_anim)):
+                lines[j].set_data(x_anim[j][i], y_anim[j][i])
+            return lines
+        
+        linsp=list(np.linspace(min(x_flat)-delt,max(x_flat)+delt,1000))
+        ax.plot(linsp,[function(x) for x in linsp], color = 'y' , label = 'func')
+        anim=animation.FuncAnimation(fig,animate,init_func=init,frames=len(x_anim[0]), interval = 1000, blit=True)
+        plt.legend()
+        plt.show()
+
     def animate_optimization_2D(self,function,x_anim,label1,label2):
         #print(x_anim)
         y_anim=[[function(x)] for x in x_anim]
@@ -29,7 +66,7 @@ class OptimizationMethods:
         
         linsp=list(np.linspace(min(x_flat)-delt,max(x_flat)+delt,1000))
         ax.plot(linsp,[function([x]) for x in linsp],color='b',label=label1)
-        anim=animation.FuncAnimation(fig,animate,init_func=init,frames=len(x_anim),interval=1000,blit=True)
+        anim=animation.FuncAnimation(fig,animate,init_func=init,frames=len(x_anim), interval = 2000,blit=True)
         plt.legend()
         plt.show()
 
@@ -166,19 +203,28 @@ class OptimizationMethods:
     def half_segment(self, function, a, b, delta = None, epsilon=None,max_iter=None):
         if(delta==None): delta=1e-8
         if(epsilon==None): epsilon=1e-7
-        if(max_iter==None): max_iter=2*(int)(math.log((b-a-delta)/(epsilon-delta)))+1
+        if(max_iter==None): max_iter=2*(int)(math.log((b-a-delta)/(epsilon-delta))) + 1
+        #print(max_iter)
+        x_anim = [[a], [b]]
         for i in range(max_iter):
             x_1=(a+b-delta)/2
             x_2=(a+b+delta)/2
             if(function(x_1)<=function(x_2)): b=x_2
             else: a=x_1
+            x_anim[0].append(a)
+            x_anim[1].append(b)
+            #x_anim[2].append((a + b) / 2)
+        #print(x_anim)
+        self.animation_2D(function, x_anim, ['a', 'b'])
         return (x_1,function(x_1)) if function(x_1)<=function(x_2) else (x_2,function(x_2))
-
+    
+    
     def golden_ratio_naive(self,function,a,b,epsilon=None,max_iter=None):
         if(epsilon==None): epsilon=1e-8
         golden_1 = (3 - math.sqrt(5)) / 2
         golden_2 = (math.sqrt(5) - 1) / 2
         if(max_iter==None): max_iter=2*(int)(math.log(epsilon/(b-a))/math.log(golden_2))+1
+        x_anim = [[a], [b], [(a + b) / 2]]
         for i in range(max_iter):
             x_1=a+(b-a)*golden_1
             x_2=a+(b-a)*golden_2
@@ -188,6 +234,10 @@ class OptimizationMethods:
             else: 
                 a=x_1
                 x=x_2
+            x_anim[0].append(a)
+            x_anim[1].append(b)
+            x_anim[2].append(x)
+        self.animation_2D(function, x_anim, ['a', 'b', 'x'])
         #self.animate_optimization_2D(function,x_anim,label,str(([round(x,2) for x in x0],round(function(x0),2))))
         return (a+b-x,function(a+b-x)) if function(a+b-x)<=function(x) else (x,function(x))
  

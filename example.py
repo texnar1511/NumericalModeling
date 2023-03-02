@@ -17,7 +17,7 @@ def f(x):
 
 #print(MathObjects.first_derivate(function=f,point=[1,2],num_var=1))
 
-a = input()
+#a = input()
 
 o=OptimizationMethods()
 
@@ -28,7 +28,7 @@ o=OptimizationMethods()
 def f(x):
     return eval(a)
 
-print(o.conditional_gradient_method(f, [-1, -1], [2, 2], label = a, method = 'cube'))
+#print(o.conditional_gradient_method(f, [-1, -1], [2, 2], label = a, method = 'cube'))
 
 
 #print(f([3,2]))
@@ -229,3 +229,10 @@ c=2
 
 # plt.legend()
 # plt.show()
+
+def f(x):
+    return x ** 2
+
+print(o.golden_ratio_naive(f, -10, 3))
+
+#o.animation_2D(f, [[1,2,3], [2,3,4],[3,4,5]], 'qq', 'wewe')
