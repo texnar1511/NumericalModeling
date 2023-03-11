@@ -350,4 +350,7 @@ class OptimizationMethods:
         return (x0,function(x0))
 
     def swarm_particles_method(self,function,a,b):
+        plt.plot(np.random.normal())
+        plt.ylabel('some numbers')
+        plt.show()
         return 0
