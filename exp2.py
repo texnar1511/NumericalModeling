@@ -8,4 +8,4 @@ f = lambda x: eval(m)
 
 a = Opt()
 
-print(a.roi(f, np.array([-1, -1]), np.array([1, 1])))
+print(a.roi(f, np.array([-2, -2]), np.array([2, 2])))

@@ -87,7 +87,7 @@ class Opt():
         #print(x_anim)
 
         #here is loop start
-        for i in range(20):
+        for i in range(100):
 
             v = np.array([chi * (v_i + phi_p * r_p * (mem_i - x_i) + phi_g * r_g * (best - x_i)) for (v_i, x_i, mem_i) in zip(v, x, mem)])
             
